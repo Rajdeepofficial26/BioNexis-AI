@@ -138,3 +138,4 @@ Input Layer → Detection Engine → Analytics Module → Reasoning Engine → P
 ## 👥 Team
 
 Developed by The BackEnd Boys
+- Rajdeep Mandal, Arkapriyo Pal, Rohit Dasgupta

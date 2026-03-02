@@ -1,141 +1,140 @@
-🚀 AeroBioForensic AI
+# 🚀 BioNexis AI
 
-Intelligent Bloodstain Detection & Forensic Pattern Analysis System
-Built using Computer Vision + Structured Forensic Logic
+AI-Powered Bloodstain Pattern Analysis System
 
-🧠 Project Overview
+---
 
-AeroBioForensic AI is an AI-powered forensic analysis system designed to detect, classify, and interpret blood-like stain patterns from images using computer vision techniques.
+## 🧠 Overview
 
-The system performs:
+BioNexis AI is a computer vision–based forensic analysis system designed to detect, analyze, and interpret blood-like stain patterns from images.
 
-Blood-like stain detection using HSV color masking
+This project combines image processing, contour analytics, and structured reasoning to generate explainable forensic reports.
 
-Shape classification (Circular, Elongated, Irregular)
+It simulates a tactical forensic HUD interface inspired by drone-based field deployment systems.
 
-Surface area computation
+The system runs fully offline using OpenCV and Flask.
 
-Similarity score analysis
+No paid APIs.
+No cloud dependency.
+Pure analytical logic.
 
-Risk level assessment
+---
 
-Structured forensic report generation
+## 🎯 Problem Statement
 
-PDF export for documentation
+Bloodstain pattern analysis plays a critical role in forensic investigations.
 
-Interactive drone-inspired UI with GPS simulation
+Traditional analysis relies heavily on manual observation.
 
-This project demonstrates practical application of:
+This can introduce subjectivity and inconsistency.
 
-Computer Vision
+There is a need for structured, computational assistance.
 
-Image Processing
+BioNexis AI addresses this gap.
 
-Analytical Reasoning
+---
 
-Structured Reporting
+## ⚙️ How It Works
 
-Frontend + Backend Integration
+1. User uploads an image.
+2. System detects red-spectrum regions using HSV masking.
+3. Contours are extracted.
+4. Surface area is calculated.
+5. Stain shapes are classified.
+6. Similarity score is computed.
+7. Risk level is determined.
+8. A structured forensic report is generated.
+9. A professional PDF report can be exported.
 
-🎯 Core Features
-🔬 Image Analysis
+All analysis is logic-based and explainable.
 
-Detects red-spectrum stains using HSV masking
+---
 
-Identifies contours and computes total stained area
+## 🧪 Core Analytics
 
-Classifies stain morphology:
+* Total stained area (in square pixels)
+* Stain count
+* Morphological classification:
 
-Circular Drop
+  * Circular Drop
+  * Elongated Drip
+  * Irregular Splash
+* Chromatic similarity index
+* Risk classification (LOW / MEDIUM / HIGH)
 
-Elongated Drip
+---
 
-Irregular Splash
+## 🖥️ Interface Features
 
-📊 Analytical Engine
+* Tactical forensic HUD design
+* Drone telemetry simulation
+* Real-time altitude animation
+* Recording timer
+* Zoom controls
+* GPS-style location panel
+* PDF report generation
+* Risk glow indicators
+* Structured AI summary section
 
-Calculates:
+---
 
-Total Area (pixels)
+## 📊 Forensic Report Structure
 
-Stain Count
+The system generates a clear report answering:
 
-Similarity Score (%)
+1. What is observed?
+2. Does it resemble a blood-like stain?
+3. What do the shapes suggest?
+4. What does the similarity score imply?
+5. Final conclusion.
 
-Risk Level (LOW / MEDIUM / HIGH)
+The report is structured and legally readable.
 
-🧾 AI Forensic Report Generator
+---
 
-Produces structured Q&A-based analysis:
+## 🛠️ Tech Stack
 
-Observation
+Backend:
 
-Blood-likeness evaluation
+* Python
+* Flask
+* OpenCV
+* NumPy
+* ReportLab
 
-Shape interpretation
+Frontend:
 
-Similarity explanation
+* HTML
+* CSS
+* JavaScript
 
-Final concise conclusion
+Architecture:
+Input Layer → Detection Engine → Analytics Module → Reasoning Engine → PDF Generator
 
-Designed for clarity and evidentiary documentation.
+---
 
-📄 PDF Export
 
-Generates formatted forensic report
+## 📌 Use Cases
 
-Preserves structured layout
+* Academic forensic demonstrations
+* Computer vision projects
+* Research prototypes
+* Structured evidence documentation
+* AI explainability showcase
 
-Ready for submission or documentation
+---
 
-🚁 Tactical UI Interface
+## 🚀 Future Scope
 
-Drone-style control panel
+* Real-time camera streaming
+* Machine learning stain classifier
+* Heatmap overlay visualization
+* Case database integration
+* GPS coordinate logging
+* Multi-image batch processing
 
-Analog joystick simulation
+---
 
-Altitude and speed telemetry
+## 👥 Team
 
-Live GPS tracking simulation
-
-Interactive visual analysis screen
-
-🛠️ Tech Stack
-
-Backend
-
-Python
-
-Flask
-
-OpenCV
-
-NumPy
-
-ReportLab
-
-Frontend
-
-HTML5
-
-CSS3
-
-JavaScript
-
-Interactive UI simulation
-
-🏗️ System Architecture
-
-Image Upload
-⬇
-HSV Red Masking
-⬇
-Contour Detection
-⬇
-Morphology Classification
-⬇
-Analytics Computation
-⬇
-AI Structured Report Generation
-⬇
-Frontend Display + PDF Export
+Developed by The BackEnd Boys

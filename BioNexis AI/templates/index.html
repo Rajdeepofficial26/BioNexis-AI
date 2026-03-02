@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>BioNexis AI</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Rajdhani:wght@500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="app">
+
+<div class="top-bar">
+    <div>
+        ✈ ALT <span id="topAlt">12.4</span>m | 🛰 GPS 10
+    </div>
+
+    <div class="top-title">BioNexis AI</div>
+
+    <div class="top-right">
+        <div class="rec-container">
+            <span class="rec-dot"></span>
+            <span id="recTimer">REC 00:00</span>
+        </div>
+    </div>
+</div>
+
+
+<div class="main">
+
+<div class="panel">
+
+<button class="control-btn" onclick="uploadImage()">📂 Select Blood Image</button>
+<button class="control-btn">📷 Capture Photo</button>
+<button class="control-btn">🎥 Record Video</button>
+
+<div class="drone-box">
+
+<video class="drone-video" autoplay loop muted>
+    <source src="{{ url_for('static', filename='drone.mp4') }}">
+</video>
+
+<div id="altValue">12.4 m</div>
+<div id="spdValue">2.5 m/s</div>
+
+<div class="drone-controls">
+    <button class="drone-btn takeoff">🚀 Takeoff</button>
+    <button class="drone-btn land">🛬 Land</button>
+</div>
+
+<div class="joystick" id="joystick">
+    <div class="stick" id="stick"></div>
+</div>
+
+</div>
+</div>
+
+<div class="panel">
+
+<div class="screen">
+    <img id="previewImage">
+    <div class="scan-line"></div>
+
+    <div class="screen-tags">
+        <div id="tag-id" class="tag green">ID: --</div>
+        <div id="tag-risk" class="tag red">Risk: --</div>
+        <div id="tag-similarity" class="tag yellow">Similarity: --</div>
+    </div>
+</div>
+
+<div id="analysisData">Awaiting Scan...</div>
+
+</div>
+
+
+<div class="panel right-panel">
+
+    <button class="control-btn">🔍 Scan Scene</button>
+    <button class="control-btn" onclick="zoomIn()">➕ Zoom In</button>
+    <button class="control-btn" onclick="zoomOut()">➖ Zoom Out</button>
+
+    <div class="location-box">
+
+        <div class="map-wrapper">
+            <img src="{{ url_for('static', filename='map.jpg') }}" class="map-img">
+
+           
+            <div class="gps-dot" id="gpsDot"></div>
+
+            
+            <div class="gps-pulse" id="gpsPulse"></div>
+        </div>
+
+        <div class="gps-coords">
+            📍 LAT: <span id="latVal">22.5726</span><br>
+            📍 LNG: <span id="lngVal">88.3639</span>
+        </div>
+
+    </div>
+
+    <button class="save-btn" onclick="downloadPDF()">📸 Save Report</button>
+    <button class="alert-btn">🚨 Alert SOS</button>
+
+</div>
+
+<div class="location-box">
+    <img src="{{ url_for('static', filename='map.jpg') }}">
+    <div style="text-align:center;margin-top:8px;">LOCATION MAP</div>
+</div>
+
+<button class="save-btn" onclick="downloadPDF()">📸 Save Report</button>
+<button class="alert-btn">🚨 Alert SOS</button>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+let latestReport="";
+let zoomLevel=1;
+let alt=12.4;
+let spd=2.5;
+
+
+
+let recSeconds=0;
+setInterval(()=>{
+recSeconds++;
+let m=String(Math.floor(recSeconds/60)).padStart(2,'0');
+let s=String(recSeconds%60).padStart(2,'0');
+document.getElementById("recTimer").innerText="REC "+m+":"+s;
+},1000);
+
+
+
+document.querySelector(".takeoff").onclick=()=>{ alt+=5; };
+document.querySelector(".land").onclick=()=>{ alt=0; };
+
+
+
+const joystick=document.getElementById("joystick");
+const stick=document.getElementById("stick");
+
+let dragging=false;
+const maxDistance=40;
+
+joystick.addEventListener("mousedown",()=> dragging=true);
+document.addEventListener("mouseup",()=>{
+dragging=false;
+stick.style.transition="0.3s";
+stick.style.transform="translate(0px,0px)";
+spd=2.5;
+});
+
+document.addEventListener("mousemove",(e)=>{
+if(!dragging) return;
+
+stick.style.transition="0s";
+
+let rect=joystick.getBoundingClientRect();
+let x=e.clientX-rect.left-60;
+let y=e.clientY-rect.top-60;
+
+let distance=Math.sqrt(x*x+y*y);
+if(distance>maxDistance){
+let angle=Math.atan2(y,x);
+x=Math.cos(angle)*maxDistance;
+y=Math.sin(angle)*maxDistance;
+}
+
+stick.style.transform=`translate(${x}px,${y}px)`;
+
+
+spd=2.5+(x/20);
+alt+=(-y/200);
+});
+
+
+
+function uploadImage(){
+
+const input=document.createElement("input");
+input.type="file";
+input.accept="image/*";
+
+input.onchange=e=>{
+
+const file=e.target.files[0];
+if(!file) return;
+
+const reader=new FileReader();
+reader.onload=function(ev){
+document.getElementById("previewImage").src=ev.target.result;
+};
+reader.readAsDataURL(file);
+
+const formData=new FormData();
+formData.append("image",file);
+
+fetch("/analyze",{ method:"POST", body:formData })
+.then(res=>{
+if(!res.ok) throw new Error("Server error");
+return res.json();
+})
+.then(data=>{
+
+if(data.error){
+alert(data.error);
+return;
+}
+
+document.getElementById("tag-id").innerText="ID: "+data.evidence_id;
+document.getElementById("tag-risk").innerText="Risk: "+data.analytics.risk;
+document.getElementById("tag-similarity").innerText="Similarity: "+data.analytics.similarity+"%";
+
+latestReport=data.ai_report;
+
+document.getElementById("analysisData").innerHTML=`
+<b>Total Area:</b> ${data.analytics.area}<br>
+<b>Stain Count:</b> ${data.analytics.count}<br>
+<b>Shapes:</b> ${data.analytics.shapes.join(", ")}<br>
+<hr>
+${data.ai_report}
+`;
+
+document.getElementById("analysisData").classList.add("show-report");
+
+})
+.catch(err=>{
+console.error(err);
+alert("Image analysis failed.");
+});
+
+};
+
+input.click();
+}
+
+
+
+function downloadPDF(){
+
+if(!latestReport){
+alert("No analysis available.");
+return;
+}
+
+fetch("/export_pdf",{
+method:"POST",
+headers:{ "Content-Type":"application/json" },
+body:JSON.stringify({
+evidence_id:document.getElementById("tag-id").innerText.replace("ID: ",""),
+risk:document.getElementById("tag-risk").innerText.replace("Risk: ",""),
+similarity:document.getElementById("tag-similarity").innerText.replace("Similarity: ",""),
+ai_report:latestReport
+})
+})
+.then(res=>res.blob())
+.then(blob=>{
+const url=window.URL.createObjectURL(blob);
+const a=document.createElement("a");
+a.href=url;
+a.download="AeroBioForensic_Report.pdf";
+a.click();
+window.URL.revokeObjectURL(url);
+})
+.catch(()=> alert("PDF download failed"));
+}
+
+
+
+function zoomIn(){
+zoomLevel+=0.1;
+document.getElementById("previewImage").style.transform=`scale(${zoomLevel})`;
+}
+function zoomOut(){
+zoomLevel-=0.1;
+if(zoomLevel<1) zoomLevel=1;
+document.getElementById("previewImage").style.transform=`scale(${zoomLevel})`;
+}
+
+
+
+setInterval(()=>{
+document.getElementById("altValue").innerText=alt.toFixed(1)+" m";
+document.getElementById("spdValue").innerText=spd.toFixed(1)+" m/s";
+document.getElementById("topAlt").innerText=alt.toFixed(1);
+},200);
+
+
+let lat = 22.5726;
+let lng = 88.3639;
+
+const gpsDot = document.getElementById("gpsDot");
+const gpsPulse = document.getElementById("gpsPulse");
+
+setInterval(() => {
+
+    
+    lat += (Math.random() - 0.5) * 0.0005;
+    lng += (Math.random() - 0.5) * 0.0005;
+
+    document.getElementById("latVal").innerText = lat.toFixed(6);
+    document.getElementById("lngVal").innerText = lng.toFixed(6);
+
+    
+    let randomX = 40 + Math.random() * 20;
+    let randomY = 40 + Math.random() * 20;
+
+    gpsDot.style.left = randomX + "%";
+    gpsDot.style.top = randomY + "%";
+
+    gpsPulse.style.left = randomX + "%";
+    gpsPulse.style.top = randomY + "%";
+
+}, 2000);
+</script>
+
+</body>
+</html>
